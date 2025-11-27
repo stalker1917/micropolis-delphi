@@ -1,0 +1,14 @@
+object MainWindow1: TMainWindow1
+  Left = 0
+  Top = 0
+  Caption = 'MainWindow'
+  ClientHeight = 480
+  ClientWidth = 640
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  OnKeyDown = FormKeyDown
+  OnMouseMove = FormMouseMove
+  OnMouseWheel = OnMouseWheelMoved
+  DesignerMasterStyle = 0
+end

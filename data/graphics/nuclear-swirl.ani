@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<micropolis-animation>
+<frame><image src="misc_animation" at="0,2000"/></frame>
+<frame><image src="misc_animation" at="0,2016"/></frame>
+<frame><image src="misc_animation" at="0,2032"/></frame>
+<frame><image src="misc_animation" at="0,2048"/></frame>
+</micropolis-animation>

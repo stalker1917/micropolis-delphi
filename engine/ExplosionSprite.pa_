@@ -1,0 +1,91 @@
+// This file is part of MicropolisJ.
+// Copyright (C) 2013 Jason Long
+// Portions Copyright (C) 1989-2007 Electronic Arts Inc.
+//
+// MicropolisJ is free software; you can redistribute it and/or modify
+// it under the terms of the GNU GPLv3, with additional terms.
+// See the README file, included in this distribution, for details.
+
+
+{
+ * Implements an explosion.
+ * An explosion occurs when certain sprites collide,
+ * or when a zone is demolished by fire.
+}
+unit ExplosionSprite;
+
+interface
+
+uses
+  SysUtils, Micropolis, Sprite, TileConstants, SoundConstants;
+
+type
+  TExplosionSprite = class(TSprite)
+  public
+    constructor Create(Engine: TMicropolis; AX, AY: Integer);
+
+    procedure MoveImpl; override;
+
+  private
+    procedure StartFire(XPos, YPos: Integer);
+  end;
+
+implementation
+
+{ TExplosionSprite }
+
+constructor TExplosionSprite.Create(Engine: TMicropolis; AX, AY: Integer);
+begin
+  inherited Create(Engine, TSpriteKind.EXP);
+  x := AX;
+  y := AY;
+  width := 48;
+  height := 48;
+  offx := -24;
+  offy := -24;
+  frame := 1;
+end;
+
+procedure TExplosionSprite.MoveImpl;
+begin
+  if (city.acycle mod 2) = 0 then
+  begin
+    if frame = 1 then
+    begin
+      city.MakeSound(x div 16, y div 16, Sound.EXPLOSION_HIGH);
+      city.SendMessageAt(MicropolisMessage.EXPLOSION_REPORT, x div 16, y div 16);
+    end;
+    Inc(frame);
+  end;
+
+  if frame > 6 then
+  begin
+    frame := 0;
+
+    StartFire(x div 16, y div 16);
+    StartFire((x div 16) - 1, (y div 16) - 1);
+    StartFire((x div 16) + 1, (y div 16) - 1);
+    StartFire((x div 16) - 1, (y div 16) + 1);
+    StartFire((x div 16) + 1, (y div 16) + 1);
+    Exit;
+  end;
+end;
+
+procedure TExplosionSprite.StartFire(XPos, YPos: Integer);
+var
+  t: Integer;
+begin
+  if not city.TestBounds(XPos, YPos) then
+    Exit;
+
+  t := city.GetTile(XPos, YPos);
+  if (not IsCombustible(t)) and (t <> DIRT) then
+    Exit;
+
+  if IsZoneCenter(t) then
+    Exit;
+
+  city.SetTile(XPos, YPos, FIRE);
+end;
+
+end.
